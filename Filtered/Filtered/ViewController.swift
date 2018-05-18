@@ -9,59 +9,22 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var iFiltered: UIImage?
 
     @IBOutlet var ivScarlett: UIImageView!
     
-    @IBOutlet var bFilter: UIButton!
+    @IBOutlet var secondaryMenu: UIView!
+    @IBOutlet var bottomMenu: UIView!
     
-    var iFiltered: UIImage?
+    @IBOutlet var filterButton: UIButton!
     
-    @IBAction func onImageToggle(sender: UIButton) {
-        
-        if bFilter.selected{
-            ivScarlett.image = UIImage(named: "scarlett")!
-            bFilter.selected = false
-        }else{
-            ivScarlett.image = iFiltered
-            bFilter.selected = true
-        }
-        
-        
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let image = UIImage(named: "scarlett")!
-        
-        var rgbImage = RGBAImage(image: image)!
-        
-        let avgRed = 107
-        
-        for y in 0..<rgbImage.height{
-            for x in 0..<rgbImage.width{
-                let index = y * rgbImage.width + x
-                
-                var pixel = rgbImage.pixels[index]
-                
-                let redDelta = Int(pixel.red) - avgRed
-                
-                var modifier = 1 + 4 * (Double(y) / Double(rgbImage.height))
-                
-                if (Int(pixel.red)<avgRed){
-                    modifier = 1
-                }
-                
-                pixel.red = UInt8(max(min(255,
-                    Int(round(Double(avgRed)+modifier*Double(redDelta)))), 0))
-                
-                rgbImage.pixels[index] = pixel
-                
-            }
-        }
-        
-        iFiltered = rgbImage.toUIImage()
-        
+        secondaryMenu.translatesAutoresizingMaskIntoConstraints = false
+        secondaryMenu.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.5)
     }
 
     override func didReceiveMemoryWarning() {
@@ -69,6 +32,33 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    @IBAction func onFilter(sender: UIButton) {
+        
+        if(sender.selected){
+            hideSecondaryMenu()
+            sender.selected = false
+        }else{
+             showSecondaryMenu()
+            sender.selected = true
+        }
+    }
+    
+    func showSecondaryMenu() {
+        view.addSubview(secondaryMenu)
+        
+        let bottomConstraint = secondaryMenu.bottomAnchor.constraintEqualToAnchor(bottomMenu.topAnchor)
+        let leftConstraint = secondaryMenu.leftAnchor.constraintEqualToAnchor(view.leftAnchor)
+        let rightConstraint = secondaryMenu.rightAnchor.constraintEqualToAnchor(view.rightAnchor)
+        let heightConstraint = secondaryMenu.heightAnchor.constraintEqualToConstant(44)
+        
+        NSLayoutConstraint.activateConstraints([bottomConstraint, leftConstraint, rightConstraint, heightConstraint])
+        
+        view.layoutIfNeeded()
+    }
+    
+    func hideSecondaryMenu(){
+        secondaryMenu.removeFromSuperview()
+    }
 
 }
 
